@@ -52,6 +52,14 @@ export function registerSettings() {
     type: String,
     default: ""
   });
+
+  // { lastSyncAt, actors: { [actorId]: { version, syncedAt, sourceTime } } }
+  game.settings.register(MODULE_ID, SETTINGS.SYNC_STATE, {
+    scope: "world",
+    config: false,
+    type: Object,
+    default: { lastSyncAt: null, actors: {} }
+  });
 }
 
 /** The key this client should send to the Worker, based on the world's role. */

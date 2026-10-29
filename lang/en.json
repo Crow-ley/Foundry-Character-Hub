@@ -28,6 +28,56 @@
       "ApiKeyHint": "The key the Worker gave this world when it was registered. Players in this world can read it, so the Worker only lets it do what players need.",
       "ApiKeyHintHome": "The key the Worker gave this world when it was registered. It is saved in this browser only, so players never see it. Enter it once on each browser you run this world from."
     },
+    "Register": {
+      "Button": "Register this world",
+      "Hint": "Register asks the Worker for this world's key and fills it in. Test connection checks the URL and key above without saving them.",
+      "Title": "Register with the Worker",
+      "Explain": "Enter the Worker's admin key. It is sent to your Worker once to create this world's key, and is not saved anywhere.",
+      "Rotate": "If this world was registered before, it gets a new key and the old one stops working, including in other browsers.",
+      "AdminKey": "Admin key",
+      "Confirm": "Register",
+      "Done": "{world} is registered. Its key has been saved.",
+      "Failed": "Registration failed: {error}"
+    },
+    "Test": {
+      "Button": "Test connection",
+      "Ok": "Connected. The Worker knows this world as {role} world \"{worldId}\".",
+      "Mismatch": "Connected, but this key belongs to {role} world \"{worldId}\", not this world. Register this world to get its own key.",
+      "Failed": "Connection failed: {error}"
+    },
+    "InUse": {
+      "Start": "Mark in use (sync to hub)",
+      "Stop": "In use: stop syncing to hub",
+      "Marker": "In use: synced to the hub",
+      "Started": "{name} is now in use and was sent to the hub.",
+      "StopTitle": "Stop syncing to the hub?",
+      "StopConfirm": "<strong>{name}</strong> will be removed from the Worker. The hub will stop receiving updates for this character, and players can no longer submit changes for it.",
+      "Stopped": "{name} is no longer synced to the hub."
+    },
+    "Sync": {
+      "AllButton": "Sync all",
+      "AllDone": "Sent {count} character(s) to the hub.",
+      "SomeFailed": "Sent {ok} of {total} character(s). {error}",
+      "NothingToDo": "No characters are marked in use.",
+      "NotConfigured": "Hub sync is not set up. Open Character Hub settings and register this world.",
+      "NotActiveGM": "Another GM is connected and handles syncing for this world."
+    },
+    "Status": {
+      "Ok": "{count} in use. Last sync {last}.",
+      "Pending": "{count} in use, {pending} waiting to sync. Last sync {last}.",
+      "Syncing": "Syncing…",
+      "Error": "Sync problem: {error}",
+      "Never": "never",
+      "JustNow": "just now"
+    },
+    "Error": {
+      "NoUrl": "No Worker URL is set.",
+      "NoKey": "No API key is set for this world.",
+      "NoHomeWorldId": "This world has no home world ID yet. Save the Home world role first.",
+      "Unreachable": "Can't reach the Worker. Check the Worker URL and your internet connection.",
+      "PlatformLimit": "Sync is paused because Cloudflare's free daily limit was reached. It resets at 00:00 UTC.",
+      "BadResponse": "The Worker gave an unexpected response (HTTP {status})."
+    },
     "Notify": {
       "RoleUnset": "Character Hub: this world has no role yet. Open Game Settings, then Configure Settings, then Character Hub to choose one.",
       "BadWorkerUrl": "Character Hub: the Worker URL must start with https:// (or http://localhost for testing).",

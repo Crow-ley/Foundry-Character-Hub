@@ -44,4 +44,16 @@
     </div>
     <p class="hint">{{localize apiKeyHint}}</p>
   </div>
+
+  {{#if hasRole}}
+  <div class="charhub-connection">
+    <button type="button" data-action="registerWorld">
+      <i class="fa-solid fa-key" inert></i> {{localize "CHARHUB.Register.Button"}}
+    </button>
+    <button type="button" data-action="testConnection">
+      <i class="fa-solid fa-plug" inert></i> {{localize "CHARHUB.Test.Button"}}
+    </button>
+  </div>
+  <p class="hint">{{localize "CHARHUB.Register.Hint"}}</p>
+  {{/if}}
 </section>

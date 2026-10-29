@@ -35,3 +35,48 @@
 .character-hub .charhub-role-banner .hint {
   margin: 0.25rem 0 0;
 }
+
+.character-hub .charhub-connection {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.character-hub .charhub-connection button {
+  flex: 1;
+}
+
+/* Actors sidebar (home worlds, GM only) */
+.charhub-sync-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  margin-top: 0.25rem;
+  border-radius: 4px;
+  font-size: var(--font-size-12, 12px);
+  background: rgba(58, 110, 165, 0.15);
+}
+
+.charhub-sync-bar.state-error,
+.charhub-sync-bar.state-paused {
+  background: rgba(176, 52, 52, 0.2);
+}
+
+.charhub-sync-bar .charhub-sync-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.charhub-sync-bar button {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 0.5rem;
+  line-height: 1.5rem;
+}
+
+.directory-item .charhub-in-use {
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 0.25rem;
+  opacity: 0.8;
+}
