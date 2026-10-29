@@ -1,0 +1,36 @@
+{
+  "CHARHUB": {
+    "Role": {
+      "unset": "Not set",
+      "home": "Home world",
+      "hub": "Hub world",
+      "UnsetHint": "This world has no role yet. Choose Home world for a campaign world that owns real characters, or Hub world for the always-online world where players edit copies.",
+      "HomeHint": "This world owns the real characters. It sends characters marked as in use to the hub and approves changes players submit there.",
+      "HubHint": "This world holds copies of characters from home worlds. Players edit them here and submit changes back for approval."
+    },
+    "Menu": {
+      "Name": "Character Hub",
+      "Label": "Configure",
+      "Hint": "Set this world's role (home or hub), the Worker URL, and the API key.",
+      "Title": "Character Hub configuration",
+      "CurrentRole": "This world's role",
+      "Save": "Save"
+    },
+    "Settings": {
+      "WorldRole": "World role",
+      "WorldRoleHint": "Changing the role reloads the world for everyone.",
+      "HomeWorldId": "Home world ID",
+      "HomeWorldIdHint": "Generated once for this world and never changed. The hub uses it to know which world a character came from.",
+      "HomeWorldIdPending": "Generated when you save with the Home world role.",
+      "WorkerUrl": "Worker URL",
+      "WorkerUrlHint": "The address of your Character Hub Cloudflare Worker, starting with https://.",
+      "ApiKey": "API key",
+      "ApiKeyHint": "The key the Worker gave this world when it was registered."
+    },
+    "Notify": {
+      "RoleUnset": "Character Hub: this world has no role yet. Open Game Settings, then Configure Settings, then Character Hub to choose one.",
+      "BadWorkerUrl": "Character Hub: the Worker URL must start with https:// (or http://localhost for testing).",
+      "Saved": "Character Hub settings saved."
+    }
+  }
+}

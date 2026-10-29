@@ -1,0 +1,47 @@
+<section class="charhub-config">
+  <div class="charhub-role-banner role-{{role}}">
+    <span class="charhub-role-caption">{{localize "CHARHUB.Menu.CurrentRole"}}</span>
+    <strong class="charhub-role-name">{{localize roleLabel}}</strong>
+    <p class="hint">{{localize roleHint}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="charhub-role">{{localize "CHARHUB.Settings.WorldRole"}}</label>
+    <div class="form-fields">
+      <select id="charhub-role" name="role">
+        {{selectOptions roleChoices selected=role localize=true}}
+      </select>
+    </div>
+    <p class="hint">{{localize "CHARHUB.Settings.WorldRoleHint"}}</p>
+  </div>
+
+  {{#if (eq role "home")}}
+  <div class="form-group">
+    <label>{{localize "CHARHUB.Settings.HomeWorldId"}}</label>
+    <div class="form-fields">
+      {{#if homeWorldId}}
+      <input type="text" value="{{homeWorldId}}" readonly>
+      {{else}}
+      <input type="text" value="" placeholder="{{localize 'CHARHUB.Settings.HomeWorldIdPending'}}" readonly>
+      {{/if}}
+    </div>
+    <p class="hint">{{localize "CHARHUB.Settings.HomeWorldIdHint"}}</p>
+  </div>
+  {{/if}}
+
+  <div class="form-group">
+    <label for="charhub-worker-url">{{localize "CHARHUB.Settings.WorkerUrl"}}</label>
+    <div class="form-fields">
+      <input type="url" id="charhub-worker-url" name="workerUrl" value="{{workerUrl}}" placeholder="https://">
+    </div>
+    <p class="hint">{{localize "CHARHUB.Settings.WorkerUrlHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="charhub-api-key">{{localize "CHARHUB.Settings.ApiKey"}}</label>
+    <div class="form-fields">
+      <input type="password" id="charhub-api-key" name="apiKey" value="{{apiKey}}" autocomplete="off">
+    </div>
+    <p class="hint">{{localize "CHARHUB.Settings.ApiKeyHint"}}</p>
+  </div>
+</section>

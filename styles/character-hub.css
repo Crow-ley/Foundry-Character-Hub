@@ -1,0 +1,37 @@
+.character-hub .charhub-role-banner {
+  border: 2px solid var(--color-border, #7a7971);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.character-hub .charhub-role-banner.role-home {
+  border-color: #3b7d3b;
+  background: rgba(59, 125, 59, 0.12);
+}
+
+.character-hub .charhub-role-banner.role-hub {
+  border-color: #3a6ea5;
+  background: rgba(58, 110, 165, 0.12);
+}
+
+.character-hub .charhub-role-banner.role-unset {
+  border-color: #b5651d;
+  background: rgba(181, 101, 29, 0.12);
+}
+
+.character-hub .charhub-role-caption {
+  display: block;
+  font-size: var(--font-size-12, 12px);
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.character-hub .charhub-role-name {
+  display: block;
+  font-size: var(--font-size-20, 20px);
+}
+
+.character-hub .charhub-role-banner .hint {
+  margin: 0.25rem 0 0;
+}
