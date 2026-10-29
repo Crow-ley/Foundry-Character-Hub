@@ -1,0 +1,13 @@
+name = "character-hub"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "character-hub"
+# Replace with the ID printed by `npx wrangler d1 create character-hub`.
+database_id = "2bd6b334-e632-45ab-b8c7-fa277b7e876e"
+migrations_dir = "migrations"
+
+# ADMIN_KEY is a secret, not set here.
+# Production: `npx wrangler secret put ADMIN_KEY`. Local: put it in .dev.vars.

@@ -13,5 +13,8 @@ export const SETTINGS = Object.freeze({
   WORLD_ROLE: "worldRole",
   HOME_WORLD_ID: "homeWorldId",
   WORKER_URL: "workerUrl",
-  API_KEY: "apiKey"
+  // Hub key: a world setting, because hub players' clients need it.
+  API_KEY: "apiKey",
+  // Home key: a client setting, so it stays in the GM's browser and players never receive it.
+  HOME_API_KEY: "homeApiKey"
 });

@@ -1,0 +1,20 @@
+{
+  "name": "character-hub-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "db:migrate:local": "wrangler d1 migrations apply character-hub --local",
+    "db:migrate:remote": "wrangler d1 migrations apply character-hub --remote",
+    "deploy": "wrangler deploy",
+    "test": "node --test test/",
+    "test:endpoints": "node test/endpoints.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.155.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261023.1": true
+  }
+}

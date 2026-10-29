@@ -1,5 +1,5 @@
 import { MODULE_ID, ROLES, SETTINGS } from "../constants.js";
-import { ensureHomeWorldId, getSetting, normalizeWorkerUrl, setSetting } from "../settings.js";
+import { ensureHomeWorldId, getApiKey, getSetting, normalizeWorkerUrl, setApiKey, setSetting } from "../settings.js";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -45,7 +45,8 @@ export class HubSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
       },
       homeWorldId: getSetting(SETTINGS.HOME_WORLD_ID),
       workerUrl: getSetting(SETTINGS.WORKER_URL),
-      apiKey: getSetting(SETTINGS.API_KEY),
+      apiKey: getApiKey(),
+      apiKeyHint: role === ROLES.HOME ? "CHARHUB.Settings.ApiKeyHintHome" : "CHARHUB.Settings.ApiKeyHint",
       buttons: [{ type: "submit", icon: "fa-solid fa-floppy-disk", label: "CHARHUB.Menu.Save" }]
     });
   }
@@ -62,7 +63,7 @@ export class HubSettingsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     const newRole = Object.values(ROLES).includes(data.role) ? data.role : ROLES.UNSET;
 
     await setSetting(SETTINGS.WORKER_URL, workerUrl);
-    await setSetting(SETTINGS.API_KEY, String(data.apiKey ?? "").trim());
+    await setApiKey(newRole, String(data.apiKey ?? "").trim());
     await setSetting(SETTINGS.WORLD_ROLE, newRole);
     await ensureHomeWorldId();
     ui.notifications.info("CHARHUB.Notify.Saved", { localize: true });

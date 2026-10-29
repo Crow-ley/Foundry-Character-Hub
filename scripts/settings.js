@@ -45,6 +45,34 @@ export function registerSettings() {
     type: String,
     default: ""
   });
+
+  game.settings.register(MODULE_ID, SETTINGS.HOME_API_KEY, {
+    scope: "client",
+    config: false,
+    type: String,
+    default: ""
+  });
+}
+
+/** The key this client should send to the Worker, based on the world's role. */
+export function getApiKey() {
+  const role = getWorldRole();
+  if (role === ROLES.HOME) return getSetting(SETTINGS.HOME_API_KEY);
+  if (role === ROLES.HUB) return getSetting(SETTINGS.API_KEY);
+  return "";
+}
+
+/**
+ * Save the key where its role keeps it. A home key never goes into the shared world setting,
+ * and switching a world to home clears any key left there.
+ */
+export async function setApiKey(role, key) {
+  if (role === ROLES.HOME) {
+    await setSetting(SETTINGS.HOME_API_KEY, key);
+    if (getSetting(SETTINGS.API_KEY)) await setSetting(SETTINGS.API_KEY, "");
+  } else if (role === ROLES.HUB) {
+    await setSetting(SETTINGS.API_KEY, key);
+  }
 }
 
 export function getSetting(key) {
