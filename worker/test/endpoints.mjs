@@ -1,10 +1,11 @@
 // Exercises every endpoint against a running Worker.
-// Usage: node test/endpoints.mjs [baseUrl] [adminKey]
+// Usage: node test/endpoints.mjs [baseUrl] [adminKey] [portalKey]
 // Defaults match `npm run dev` with the values in .dev.vars.example.
 // Uses throwaway world IDs, but still only point it at a test database.
 
 const BASE = (process.argv[2] ?? "http://localhost:8787").replace(/\/+$/, "");
 const ADMIN = process.argv[3] ?? "local-test-admin-key";
+const PORTAL = process.argv[4] ?? "local-test-portal-key";
 const RUN = Date.now().toString(36);
 const HOME_A = `testA${RUN}`;
 const HOME_B = `testB${RUN}`;
@@ -203,6 +204,27 @@ async function main() {
   check("nothing left pending", r.json?.changeRequests?.length === 0, r);
   r = await call("POST", "/v1/change-requests/does-not-exist/resolve", { key: homeA, body: { status: "approved" } });
   check("unknown request is 404", r.status === 404, r);
+
+  console.log("\nUser lists and the portal key");
+  const players = [{ id: "user00000000001", name: "Player One" }, { id: "user00000000002", name: "Player Two" }];
+  r = await call("PUT", `/v1/users/${HOME_A}`, { key: homeA, body: { schemaVersion: 1, users: players } });
+  check("home A pushes its user list", r.status === 201 && r.json?.count === 2, r);
+  r = await call("PUT", `/v1/users/${HOME_A}`, { key: homeB, body: { schemaVersion: 1, users: [] } });
+  check("home B cannot push home A's list", r.status === 403, r);
+  r = await call("GET", `/v1/users/${HOME_A}`, { key: hub });
+  check("hub key cannot read user lists", r.status === 403, r);
+  r = await call("GET", "/v1/me", { key: PORTAL });
+  check("portal key identifies as portal", r.status === 200 && r.json?.role === "portal", r);
+  r = await call("GET", `/v1/users/${HOME_A}`, { key: PORTAL });
+  check("portal reads home A's list", r.status === 200 && r.json?.users?.[1]?.name === "Player Two", r);
+  r = await call("GET", "/v1/users", { key: PORTAL });
+  check("portal lists every world's users", r.status === 200 && r.json?.worlds?.some(w => w.homeWorldId === HOME_A), r);
+  r = await call("GET", `/v1/snapshots?homeWorldId=${HOME_A}`, { key: PORTAL });
+  check("portal cannot read snapshots (yet)", r.status === 403, r);
+  r = await call("POST", "/v1/change-requests", { key: PORTAL, body: cr });
+  check("portal cannot submit change requests", r.status === 403, r);
+  r = await call("PUT", `/v1/users/${HOME_A}`, { key: PORTAL, body: { schemaVersion: 1, users: [] } });
+  check("portal cannot write user lists", r.status === 403, r);
 
   console.log("\nDelete and revoke");
   r = await call("DELETE", `/v1/snapshots/${HOME_A}/actor0000000002`, { key: hub });

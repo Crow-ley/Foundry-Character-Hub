@@ -1,4 +1,4 @@
-import { FLAGS, MODULE_ID, PUSH_DELAY_MS, ROLES, SCHEMA_VERSION, SETTINGS } from "../constants.js";
+import { FLAGS, MODULE_ID, PUSH_DELAY_MS, ROLES, SCHEMA_VERSION, SETTINGS, USERS_PUSH_DELAY_MS } from "../constants.js";
 import { HubApiError, WorkerClient } from "../api.js";
 import { getApiKey, getSetting, getWorldRole, setSetting } from "../settings.js";
 
@@ -150,6 +150,71 @@ export function schedulePush(actor) {
   if (status.state !== "error" && status.state !== "paused") setStatus("pending");
 }
 
+// ----- Player list -----
+// The world's players (Foundry user id and name) go to the Worker, so a website can let players pick
+// their Foundry user when they claim a character. GM and assistant GM users are never sent.
+
+let usersTimer = null;
+let usersInFlight = false;
+let usersDirty = false;
+
+/** Players only, sorted by id so an unchanged list always produces the same text. */
+export function playerList() {
+  return game.users.filter(user => !user.isGM)
+    .map(user => ({ id: user.id, name: user.name }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/** Send the player list if it changed since the last send, or always with `force`. Returns true if up to date. */
+export async function pushUsers({ force = false } = {}) {
+  if (!isPusher() || !isConfigured()) return false;
+  if (status.pausedUntil > Date.now()) return false;
+  if (usersInFlight) {
+    usersDirty = true;
+    return false;
+  }
+  clearTimeout(usersTimer);
+  usersTimer = null;
+
+  const users = playerList();
+  const text = JSON.stringify(users);
+  if (!force && getSetting(SETTINGS.USERS_STATE)?.sent === text) return true;
+
+  usersInFlight = true;
+  try {
+    const result = await new WorkerClient().request("PUT", `/v1/users/${getSetting(SETTINGS.HOME_WORLD_ID)}`, {
+      json: { schemaVersion: SCHEMA_VERSION, users }
+    });
+    await setSetting(SETTINGS.USERS_STATE, { sent: text, version: result.version, syncedAt: result.updatedAt });
+    return true;
+  } catch (err) {
+    console.warn(`${MODULE_ID} | Sending the player list failed:`, err);
+    // A Worker that predates user lists answers not_found. Characters still sync, so don't show an error.
+    if (!(err instanceof HubApiError && err.code === "not_found")) handleError(err);
+    return false;
+  } finally {
+    usersInFlight = false;
+    if (usersDirty) {
+      usersDirty = false;
+      scheduleUsersPush();
+    }
+  }
+}
+
+/** Send the player list USERS_PUSH_DELAY_MS from the first user change. */
+export function scheduleUsersPush() {
+  if (!isPusher()) return;
+  if (usersInFlight) {
+    usersDirty = true;
+    return;
+  }
+  if (usersTimer) return;
+  usersTimer = setTimeout(() => {
+    usersTimer = null;
+    pushUsers();
+  }, USERS_PUSH_DELAY_MS);
+}
+
 /**
  * Push characters one after another. With `onlyStale`, skip characters unchanged since their last push.
  * Used by the "Sync all to hub" button and to catch up on changes made while no GM was syncing.
@@ -159,6 +224,10 @@ export async function syncAll({ onlyStale = false, notify = true } = {}) {
   if (!isPusher()) return ui.notifications.warn("CHARHUB.Sync.NotActiveGM", { localize: true });
   if (!isConfigured()) return ui.notifications.warn("CHARHUB.Sync.NotConfigured", { localize: true });
   status.pausedUntil = 0;
+
+  // The player list rides along: always resent by the button, only if changed on the catch-up at login.
+  await pushUsers({ force: !onlyStale });
+  if (status.state === "paused") return;
 
   const synced = getSetting(SETTINGS.SYNC_STATE).actors ?? {};
   const actors = inUseActors().filter(a => !onlyStale || failed.has(a.id) || !synced[a.id]
@@ -254,6 +323,13 @@ export function registerHomeSync() {
     }
   }
 
+  // Players added, renamed, removed, or made GM (which drops them from the list).
+  Hooks.on("createUser", () => scheduleUsersPush());
+  Hooks.on("deleteUser", () => scheduleUsersPush());
+  Hooks.on("updateUser", (user, changes) => {
+    if ("name" in changes || "role" in changes) scheduleUsersPush();
+  });
+
   Hooks.once("ready", () => {
     if (!isPusher()) return;
     if (!isConfigured()) {
@@ -261,6 +337,7 @@ export function registerHomeSync() {
       return;
     }
     // Catch up on anything changed while no GM was connected, or that failed to push last time.
+    // This also sends the player list if it changed.
     syncAll({ onlyStale: true, notify: false });
   });
 }

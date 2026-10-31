@@ -23,7 +23,7 @@ npm run test:endpoints
 ## Layout
 
 - `src/index.js`: routing and CORS
-- `src/auth.js`: world keys and the admin key
+- `src/auth.js`: world keys, the admin key, and the optional read-only portal key (`PORTAL_KEY` secret, for a website that shows players their characters; leave it unset if you don't have one)
 - `src/db.js`: turns database errors (including daily limits) into clear responses
 - `src/routes/`: the endpoints
 - `migrations/`: the D1 database schema

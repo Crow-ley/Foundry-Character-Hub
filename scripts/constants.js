@@ -18,7 +18,9 @@ export const SETTINGS = Object.freeze({
   // Home key: a client setting, so it stays in the GM's browser and players never receive it.
   HOME_API_KEY: "homeApiKey",
   // Home worlds: what was last pushed for each character, so missed changes are caught up on login.
-  SYNC_STATE: "syncState"
+  SYNC_STATE: "syncState",
+  // Home worlds: the player list last sent to the Worker, so it is only sent again when it changes.
+  USERS_STATE: "usersState"
 });
 
 export const FLAGS = Object.freeze({
@@ -27,3 +29,6 @@ export const FLAGS = Object.freeze({
 
 /** Wait this long after a change before pushing, so a busy combat turn becomes one push. */
 export const PUSH_DELAY_MS = 30_000;
+
+/** Wait this long after a user is added, renamed or removed, so several edits become one send. */
+export const USERS_PUSH_DELAY_MS = 5_000;

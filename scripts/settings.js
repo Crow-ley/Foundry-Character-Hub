@@ -60,6 +60,15 @@ export function registerSettings() {
     type: Object,
     default: { lastSyncAt: null, actors: {} }
   });
+
+  // { sent, version, syncedAt }: `sent` is the player list last sent, as JSON text.
+  // Kept apart from syncState so a user-list send and a character push never overwrite each other's record.
+  game.settings.register(MODULE_ID, SETTINGS.USERS_STATE, {
+    scope: "world",
+    config: false,
+    type: Object,
+    default: { sent: null, version: null, syncedAt: null }
+  });
 }
 
 /** The key this client should send to the Worker, based on the world's role. */

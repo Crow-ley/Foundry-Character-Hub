@@ -21,10 +21,26 @@ function bearerToken(request) {
   return match ? match[1] : null;
 }
 
-/** Check the request's world key. Returns { worldId, role }. */
+/** Constant-time check of a token against a Worker secret. Hashing first makes both sides the same length. */
+async function matchesSecret(token, secret) {
+  const [given, expected] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(token)),
+    crypto.subtle.digest("SHA-256", encoder.encode(secret))
+  ]);
+  return crypto.subtle.timingSafeEqual(given, expected);
+}
+
+/**
+ * Check the request's key. Returns { worldId, role }.
+ * The portal key (the PORTAL_KEY secret, held only by a website's server) has role "portal" and no
+ * world. What it may call is limited by the router's allowlist, not by the route handlers.
+ */
 export async function authenticateWorld(request, env) {
   const token = bearerToken(request);
   if (!token) throw new HttpError(401, "unauthorized", "Missing API key.");
+  if (env.PORTAL_KEY && await matchesSecret(token, env.PORTAL_KEY)) {
+    return { worldId: null, role: "portal" };
+  }
   const hash = await sha256Hex(token);
   const row = await db(() =>
     env.DB.prepare("SELECT world_id, role FROM worlds WHERE key_hash = ?1").bind(hash).first()
@@ -46,12 +62,7 @@ export async function requireAdmin(request, env) {
   }
   const token = bearerToken(request);
   if (!token) throw new HttpError(401, "unauthorized", "Missing admin key.");
-  // Compare hashes so both sides are the same length for the constant-time check.
-  const [given, expected] = await Promise.all([
-    crypto.subtle.digest("SHA-256", encoder.encode(token)),
-    crypto.subtle.digest("SHA-256", encoder.encode(env.ADMIN_KEY))
-  ]);
-  if (!crypto.subtle.timingSafeEqual(given, expected)) {
+  if (!await matchesSecret(token, env.ADMIN_KEY)) {
     throw new HttpError(401, "unauthorized", "Wrong admin key.");
   }
 }
